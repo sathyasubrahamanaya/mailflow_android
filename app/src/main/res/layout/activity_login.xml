@@ -4,8 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient"
+    android:background="#192D48"
     tools:context=".LoginActivity">
+
+
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -20,6 +22,7 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:title="Login" />
     </com.google.android.material.appbar.AppBarLayout>
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -50,9 +53,21 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.3">
 
+            <ImageView
+                android:layout_width="@dimen/_100sdp"
+                android:src="@drawable/mailflow_logo_icon2"
+                android:scaleType="centerCrop"
+                android:layout_gravity="center_horizontal"
+
+                android:layout_height="@dimen/_100sdp">
+
+            </ImageView>
+
+
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/usernameTextInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 app:boxCornerRadiusBottomStart="@dimen/_8sdp"
                 app:boxCornerRadiusBottomEnd="@dimen/_8sdp"
@@ -71,7 +86,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/passwordTextInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox.Dense"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:boxCornerRadiusBottomStart="@dimen/_8sdp"
@@ -98,6 +113,16 @@
                 android:text="Login"
                 android:textAllCaps="false"
                 app:cornerRadius="@dimen/_8sdp" />
+            <TextView
+                android:id="@+id/registerTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/register_to_continue"
+                android:textColor="#000000"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_4sdp"
+                android:textColorLink="@color/primary"
+                android:textSize="@dimen/_14ssp" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
