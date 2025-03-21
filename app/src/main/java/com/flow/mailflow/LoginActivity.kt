@@ -47,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
         val startIndex = text.indexOf("Register")
         val endIndex = startIndex + "Register".length
 
+
         // Create a ForegroundColorSpan for white color
         val whiteColorSpan = ForegroundColorSpan(Color.WHITE)
 
