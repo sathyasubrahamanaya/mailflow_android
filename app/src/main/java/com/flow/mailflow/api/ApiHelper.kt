@@ -1,6 +1,7 @@
 package com.flow.mailflow.api
 
 import com.flow.mailflow.data_models.response_data.base_response.BaseResponse
+import com.flow.mailflow.utils.App
 import com.flow.mailflow.utils.SharedPreferenceHelper
 import com.flow.mailflow.utils.Utils.timberCall
 import com.google.gson.GsonBuilder
@@ -60,32 +61,32 @@ object ApiHelper {
             if (response.isSuccessful) {
                 when{
                     response.body() is JsonObject -> {
-                        timberCall("RepoStatus1",response.body().toString())
+                        timberCall(App.applicationContext(),"RepoStatus1",response.body().toString())
                         ApiState.success(response.body())
                     }
                     response.body() is String -> {
-                        timberCall("RepoStatus2",response.body().toString())
+                        timberCall(App.applicationContext(),"RepoStatus2",response.body().toString())
                         ApiState.success(response.body())
                     }
                     response.body() is BaseResponse<*> -> {
                         val baseResponse = (response.body() as BaseResponse<T>)
-                        timberCall("RepoStatus3",baseResponse.data.toString())
+                        timberCall(App.applicationContext(),"RepoStatus3",baseResponse.data.toString())
                         val baseErrorCode = baseResponse.errorcode!!
-                        timberCall("baseErrorCode",baseErrorCode.toString())
+                        timberCall(App.applicationContext(),"baseErrorCode",baseErrorCode.toString())
 
                         when (baseErrorCode) {
                             0 -> {
-                                timberCall("RepoSuccessBody",response.body().toString())
-                                timberCall("RepoSuccessData",baseResponse.data.toString())
+                                timberCall(App.applicationContext(),"RepoSuccessBody",response.body().toString())
+                                timberCall(App.applicationContext(),"RepoSuccessData",baseResponse.data.toString())
                                 ApiState.success(response.body())
                             }
                             1 -> {
-                                timberCall("RepoErrorBody",response.body().toString())
-                                timberCall("RepoErrorData",baseResponse.data.toString())
+                                timberCall(App.applicationContext(),"RepoErrorBody",response.body().toString())
+                                timberCall(App.applicationContext(),"RepoErrorData",baseResponse.data.toString())
                                 ApiState.error(baseErrorCode, baseResponse.message.toString())
                             }
                             else -> {
-                                timberCall("RepoErrorOtherStatus",response.message().toString())
+                                timberCall(App.applicationContext(),"RepoErrorOtherStatus",response.message().toString())
                                 ApiState.error(baseErrorCode, baseResponse.message)
                             }
                         }

@@ -1,5 +1,6 @@
 package com.flow.mailflow.utils
 
+import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
@@ -7,9 +8,9 @@ import androidx.lifecycle.Observer
 import timber.log.Timber
 
 object Utils {
-    fun Any.timberCall(name:String,exception: String,toast :Boolean = false){
+    fun Any.timberCall(context: Context,name:String,exception: String,toast :Boolean = false){
         if (toast){
-            Toast.makeText(App.applicationContext(), "$name, : $exception", Toast.LENGTH_SHORT)
+            Toast.makeText(context, "$name, : $exception", Toast.LENGTH_SHORT)
                 .show()
         }
         Timber.tag(name).e(exception)

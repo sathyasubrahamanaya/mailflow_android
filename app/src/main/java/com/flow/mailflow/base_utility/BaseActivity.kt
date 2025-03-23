@@ -72,7 +72,7 @@ open class BaseActivity : AppCompatActivity() {
             else dialogBase?.dismiss()
 
         } catch (e: java.lang.Exception) {
-            timberCall("loadingDialogException", e.toString())
+            timberCall(this@BaseActivity,"loadingDialogException", e.toString())
         }
 
     }
@@ -190,7 +190,7 @@ open class BaseActivity : AppCompatActivity() {
             dialogBaseInternet?.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE)
                 ?.setTextColor(ContextCompat.getColor(context, android.R.color.black))
         } catch (e: Exception) {
-            timberCall("API => ShowApiRetryAlert: ", e.message.toString())
+            timberCall(this,"API => ShowApiRetryAlert: ", e.message.toString())
 
         }
     }

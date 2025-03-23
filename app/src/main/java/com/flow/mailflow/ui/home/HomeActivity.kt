@@ -225,7 +225,7 @@ class HomeActivity : AppCompatActivity() {
                 // Permissions granted, start recording if needed
                 startRecording()
             } else {
-                timberCall("Permissions required","Permissions are required to record audio.",true)
+                timberCall(this,"Permissions required","Permissions are required to record audio.",true)
             }
         }
     }
