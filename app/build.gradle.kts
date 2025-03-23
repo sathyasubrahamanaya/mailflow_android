@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.flow.mailflow"
-        minSdk = 24
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -28,6 +28,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -48,7 +49,40 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    implementation(libs.androidx.viewpager2)
+
+    //    //sdp
     implementation(libs.sdp.android)
     implementation(libs.ssp.android)
-    implementation(libs.androidx.viewpager2)
+
+    //    //prefrance
+    implementation(libs.androidx.preference.ktx)
+
+    //Timber for logging
+    implementation(libs.timber)
+
+    ///Shimmer
+    implementation (libs.shimmer)
+
+    //networking
+    implementation (libs.retrofit)
+    implementation (libs.converter.gson)
+    implementation (libs.converter.scalars)
+    implementation (libs.okhttp)
+    implementation (libs.gson)
+    implementation (libs.logging.interceptor)
+    implementation (libs.dnsjava)
+
+    //coroutines
+    implementation (libs.kotlinx.coroutines.android)
+
+    //lifecycle
+    implementation (libs.androidx.lifecycle.viewmodel.ktx)
+    implementation (libs.androidx.lifecycle.livedata.ktx)
+    implementation (libs.androidx.lifecycle.runtime.ktx)
+    implementation (libs.androidx.lifecycle.extensions)
+    implementation (libs.lottie)
+
+
 }

@@ -6,4 +6,8 @@
     <color name="background">#FFFFFF</color>
     <color name="surface">#FFFFFF</color>
     <color name="error">#B00020</color>
+    <color name="green">#1DBB23</color>
+
+    <color name="blackTransparent70">#D9000000</color>
+
 </resources>
