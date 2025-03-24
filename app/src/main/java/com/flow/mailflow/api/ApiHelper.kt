@@ -1,6 +1,8 @@
 package com.flow.mailflow.api
 
+import android.content.Context
 import com.flow.mailflow.data_models.response_data.base_response.BaseResponse
+import com.flow.mailflow.repo.prefs
 import com.flow.mailflow.utils.App
 import com.flow.mailflow.utils.SharedPreferenceHelper
 import com.flow.mailflow.utils.Utils.timberCall
@@ -20,7 +22,7 @@ import java.util.concurrent.TimeUnit
 import javax.net.ssl.SSLContext
 
 object ApiHelper {
-    val baseUrl = "http://businessrover.in/"
+    val baseUrl = "https://superb-hound-discrete.ngrok-free.app/"
 
     lateinit var apiService: ApiService
 
@@ -118,15 +120,11 @@ object ApiHelper {
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         val authInterceptor = Interceptor { chain ->
             val original: Request = chain.request()
+            val sharedPreferences = App.applicationContext().getSharedPreferences("user", Context.MODE_PRIVATE)
             val builder: Request.Builder = original.newBuilder()
                 //.header("Authorization", Credentials.basic("api_admin", "admin123"))
 
-                .header("Authorization",
-                    "Bearer : ${SharedPreferenceHelper().getString(SharedPreferenceHelper.TOKEN,"")}")
-            Timber.tag("BearerToken")
-                .e(SharedPreferenceHelper().getString(SharedPreferenceHelper.TOKEN,""))
-            Timber.tag("DeviceToken")
-                .e(SharedPreferenceHelper().getString(SharedPreferenceHelper.TOKEN,""))
+                .header("X-API-Key", sharedPreferences.getString("token", "")?:"")
 
             val request: Request = builder.build()
             chain.proceed(request)

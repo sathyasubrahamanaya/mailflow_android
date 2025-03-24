@@ -10,13 +10,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.flow.mailflow.R
 import com.flow.mailflow.databinding.ActivityMainBinding
+import com.flow.mailflow.ui.home.HomeActivity
 import com.flow.mailflow.ui.login.LoginActivity
+import com.flow.mailflow.utils.SharedPreferenceHelper
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
+        val sharedPreference = getSharedPreferences("user", MODE_PRIVATE)
+        val token = sharedPreference.getString(SharedPreferenceHelper.TOKEN, "")
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -26,9 +30,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish() // Close the splash screen activity
+            if(token != ""){
+                startActivity(Intent(this, HomeActivity::class.java))
+                finishAffinity()
+            }else{
+                startActivity(Intent(this, LoginActivity::class.java))
+                finishAffinity()
+            }
         }, 2000) // 5000 milliseconds = 5 seconds
     }
 

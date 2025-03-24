@@ -11,22 +11,27 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import com.flow.mailflow.api.Status
+import com.flow.mailflow.base_utility.BaseActivity
 import com.flow.mailflow.databinding.ActivityHomeBinding
 import com.flow.mailflow.ui.contacts_list.ContactListActivity
-import com.flow.mailflow.ui.support.SupportActivity
-import com.flow.mailflow.ui.confirm.ConfirmActivity
 import com.flow.mailflow.ui.feedback.FeedbackActivity
+import com.flow.mailflow.ui.support.SupportActivity
 import com.flow.mailflow.utils.Utils.timberCall
+import timber.log.Timber
+import java.io.File
 
-class HomeActivity : AppCompatActivity() {
+
+class HomeActivity : BaseActivity() {
+    private val vm: HomeViewModel by viewModels()
     private lateinit var binding: ActivityHomeBinding
     private var mediaRecorder: MediaRecorder? = null
     private var isRecording = false
@@ -40,6 +45,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
+
 
         enableEdgeToEdge()
         setContentView(binding.root)
@@ -102,14 +108,68 @@ class HomeActivity : AppCompatActivity() {
             outputFileName = ""
         }
         binding.sendButton.setOnClickListener {
-            startActivity(Intent(this, ConfirmActivity::class.java))
+
+            if(outputFilePath.isNotEmpty()){
+                /*val callback: IConvertCallback = object : IConvertCallback {
+                    override fun onSuccess(convertedFile: File) {
+                        // So fast? Love it!
+                        generateFileApi(convertedFile)
+                    }
+
+                    override fun onFailure(error: Exception) {
+                        // Oops! Something went wrong
+                    }
+                }
+
+                AndroidAudioConverter.with(this)
+                    .setFile(File(outputFilePath))
+                    .setFormat(AudioFormat.MP3)
+                    .setCallback(callback)
+                    .convert()*/
+                generateFileApi(File(outputFilePath))
+            }else{
+                generateFileApi()
+            }
+
+            //startActivity(Intent(this, ConfirmActivity::class.java))
         }
 
 
     }
 
+    private fun generateFileApi(convertedFile: File? = null) {
 
 
+        vm.generateMail(
+            binding.recipientEditText.text.toString(),
+            binding.instructionsEditText.text.toString(),
+            "",
+            convertedFile
+        ).observe(this){
+            when (it.status) {
+                Status.LOADING -> {
+                    showLoading(true)
+                }
+
+                Status.COMPLETED -> {
+                    showLoading(false)
+                }
+
+                Status.ERROR -> {
+                    toastError(this, it.response?.message ?: it.message)
+                }
+
+                Status.SUCCESS -> {
+                    if (it.response?.errorcode == 0) {
+                        Timber.tag("SuccessFromHome").e(it.response.data.toString())
+                        //startActivity(Intent(this, ConfirmActivity::class.java))
+                    }else{
+                        toastError(this, it.response?.message ?: it.message)
+                    }
+                }
+            }
+        }
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.S)

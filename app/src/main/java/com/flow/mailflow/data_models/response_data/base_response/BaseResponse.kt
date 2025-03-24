@@ -15,40 +15,18 @@ import org.json.JSONException
 
 @JsonAdapter(ItemTypeAdapterFactory::class)
 class BaseResponse<T> {
-    @SerializedName("error_code")
+    @SerializedName("ErrorCode")
     @Expose
     var errorcode: Int? = null
 
-    @SerializedName("data")
+    @SerializedName("Data")
     @Expose
     var data: T? = null
         private set
 
-    @SerializedName("message")
+    @SerializedName("Message")
     @Expose
     var message: String? = null
-
-    /////Additional Data Items
-
-    @SerializedName("current_page")
-    @Expose
-    var currentpage: String? = null
-
-    @SerializedName("total_pages")
-    @Expose
-    var totalpagr: Int? = null
-
-    @SerializedName("token")
-    @Expose
-    var token: String? = null
-
-    @SerializedName("file_id")
-    @Expose
-    var fileId: Int? = null
-
-    @SerializedName("path")
-    @Expose
-    var path: String? = null
 
 }
 
@@ -67,24 +45,24 @@ private class ItemTypeAdapterFactory:TypeAdapterFactory {
                 if (jsonElement.isJsonObject){
                     val jsonObject = jsonElement.asJsonObject
                     //validation errors and other errors can be add here
-                    if (jsonObject.get("error_code").asInt == ErrorType.VALIDATION_ERROR.ordinal){
-                        if (jsonObject.get("message").isJsonObject){
-                            val json = jsonObject.get("message").asJsonObject
+                    if (jsonObject.get("ErrorCode").asInt == ErrorType.VALIDATION_ERROR.ordinal){
+                        if (jsonObject.get("Message").isJsonObject){
+                            val json = jsonObject.get("Message").asJsonObject
                             val iter :Iterator<String> = json.keySet().iterator()
                             while (iter.hasNext()){
                                 val key = iter.next()
                                 try {
                                     val value:Any = json.get(key)
                                     val error = value as JsonArray
-                                    jsonObject.add("message",error[0])
-                                    jsonObject.remove("message")
+                                    jsonObject.add("Message",error[0])
+                                    jsonObject.remove("Message")
 
                                 }catch (e: JSONException){
                                     // Something went wrong!
                                 }
                             }
-                        }else if(jsonObject.get("message").isJsonArray){
-                            val data = jsonObject.get("message").asJsonArray
+                        }else if(jsonObject.get("Message").isJsonArray){
+                            val data = jsonObject.get("Message").asJsonArray
                             data?.forEachIndexed{
                                     index, jsonElements ->
                                 val item = jsonElements
@@ -92,8 +70,8 @@ private class ItemTypeAdapterFactory:TypeAdapterFactory {
                                     if (item.asJsonArray.size() != 0){
                                         val el = item.asJsonArray.get(0)
                                         if (el.isJsonPrimitive){
-                                            jsonObject.add("message", el)
-                                            jsonObject.remove("message")
+                                            jsonObject.add("Message", el)
+                                            jsonObject.remove("Message")
                                         }
                                     }
                                 }
