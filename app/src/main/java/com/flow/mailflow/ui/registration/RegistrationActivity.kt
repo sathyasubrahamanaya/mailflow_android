@@ -11,9 +11,8 @@ import com.flow.mailflow.base_utility.BaseActivity
 import com.flow.mailflow.data_models.request_data.LoginRequest
 import com.flow.mailflow.data_models.request_data.RegisterRequest
 import com.flow.mailflow.databinding.ActivityRegistrationBinding
-import com.flow.mailflow.repo.prefs
 import com.flow.mailflow.ui.home.HomeActivity
-import com.flow.mailflow.utils.Utils.timberCall
+import com.flow.mailflow.utils.SharedPreferenceHelper
 import timber.log.Timber
 
 class RegistrationActivity : BaseActivity() {
@@ -101,8 +100,9 @@ class RegistrationActivity : BaseActivity() {
                 }
 
                 Status.SUCCESS -> {
-                    val sharedPreferences = getSharedPreferences("user", MODE_PRIVATE)
-                    sharedPreferences.edit().putString("token", its.response?.data?.apiKey).apply()
+                    /*val sharedPreferences = getSharedPreferences("user", MODE_PRIVATE)
+                    sharedPreferences.edit().putString("token", its.response?.data?.apiKey).apply()*/
+                    SharedPreferenceHelper.with(this).putString(SharedPreferenceHelper.TOKEN,its.response?.data?.apiKey)
                     startActivity(Intent(this, HomeActivity::class.java))
                     finishAffinity()
                 }

@@ -14,6 +14,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -23,31 +24,31 @@ import com.flow.mailflow.api.Status
 import com.flow.mailflow.base_utility.BaseActivity
 import com.flow.mailflow.databinding.ActivityHomeBinding
 import com.flow.mailflow.ui.contacts_list.ContactListActivity
+import com.flow.mailflow.ui.support.SupportActivity
+import com.flow.mailflow.ui.confirm.ConfirmActivity
 import com.flow.mailflow.ui.feedback.FeedbackActivity
 import com.flow.mailflow.ui.home.components.WavClass
-import com.flow.mailflow.ui.support.SupportActivity
 import com.flow.mailflow.utils.Utils.timberCall
 import timber.log.Timber
 import java.io.File
 
-
 class HomeActivity : BaseActivity() {
-    private val vm: HomeViewModel by viewModels()
     private lateinit var binding: ActivityHomeBinding
     private var mediaRecorder: MediaRecorder? = null
     private var isRecording = false
     private var outputFilePath: String = ""
     private var outputFileName: String = ""
-    lateinit var wavObj: WavClass
 
     // Properties for toggling playback
     private var mediaPlayer: MediaPlayer? = null
     private var isPlayingFile = false
+    private val vm: HomeViewModel by viewModels()
+
+    lateinit var wavObj: WavClass
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
-
 
         enableEdgeToEdge()
         setContentView(binding.root)
@@ -72,14 +73,11 @@ class HomeActivity : BaseActivity() {
 
         wavObj = WavClass(filesDir.path)
 
-
-
         // Set click listeners
         binding.recordButton.setOnClickListener {
             if (!isRecording){
                 if (checkPermissions()) {
                     binding.lottieAnimationView.playAnimation()
-                    wavObj.startRecording()
                     startRecordingUI()
                 } else {
                     // Check if we should show rationale or if the permission was permanently denied
@@ -92,7 +90,6 @@ class HomeActivity : BaseActivity() {
                     } else {
                         requestPermissions()
                     }
-
                 }
             }else{
                 wavObj.stopRecording()
@@ -104,8 +101,6 @@ class HomeActivity : BaseActivity() {
 
         binding.filePlayView.setOnClickListener {
             wavObj.getPath(wavObj.tempWavFile)?.let { it1 -> togglePlayback(it1) }
-
-            //togglePlayback(outputFilePath)
         }
         binding.closeButton.setOnClickListener {
             binding.cardView.isVisible = false
@@ -113,38 +108,17 @@ class HomeActivity : BaseActivity() {
             outputFileName = ""
         }
         binding.sendButton.setOnClickListener {
-
             if(outputFilePath.isNotEmpty()){
-                /*val callback: IConvertCallback = object : IConvertCallback {
-                    override fun onSuccess(convertedFile: File) {
-                        // So fast? Love it!
-                        generateFileApi(convertedFile)
-                    }
-
-                    override fun onFailure(error: Exception) {
-                        // Oops! Something went wrong
-                    }
-                }
-
-                AndroidAudioConverter.with(this)
-                    .setFile(File(outputFilePath))
-                    .setFormat(AudioFormat.MP3)
-                    .setCallback(callback)
-                    .convert()*/
                 generateFileApi(File(outputFilePath))
             }else{
                 generateFileApi()
             }
-
-            //startActivity(Intent(this, ConfirmActivity::class.java))
         }
 
 
     }
 
     private fun generateFileApi(convertedFile: File? = null) {
-
-
         vm.generateMail(
             binding.recipientEditText.text.toString(),
             binding.instructionsEditText.text.toString(),
@@ -177,21 +151,15 @@ class HomeActivity : BaseActivity() {
     }
 
 
+
+
+
     @RequiresApi(Build.VERSION_CODES.S)
     private fun startRecordingUI() {
         if (isRecording) return
+        wavObj.startRecording()
         isRecording = true
         binding.recordButton.text = "Stop Recording"
-
-        // Update progress bar (simple simulation)
-        Thread {
-            while (isRecording) {
-                Thread.sleep(100)
-                runOnUiThread {
-
-                }
-            }
-        }.start()
     }
 
     private fun stopRecordingUI() {
@@ -204,7 +172,7 @@ class HomeActivity : BaseActivity() {
         stopRecordingUI()
         binding.recordButton.text = "Start Recording"
         binding.cardView.isVisible = true
-        binding.fileNameTextView.text = outputFileName
+        binding.fileNameTextView.text = outputFilePath
     }
 
     private fun togglePlayback(filePath: String) {
@@ -271,9 +239,7 @@ class HomeActivity : BaseActivity() {
         if (requestCode == REQUEST_PERMISSION_CODE) {
             if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 // Permissions granted, start recording if needed
-                wavObj.startRecording()
                 startRecordingUI()
-
             } else {
                 timberCall(this,"Permissions required","Permissions are required to record audio.",true)
             }

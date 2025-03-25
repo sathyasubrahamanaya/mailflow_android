@@ -18,10 +18,8 @@ import com.flow.mailflow.api.Status
 import com.flow.mailflow.base_utility.BaseActivity
 import com.flow.mailflow.data_models.request_data.LoginRequest
 import com.flow.mailflow.databinding.ActivityLoginBinding
-import com.flow.mailflow.repo.prefs
 import com.flow.mailflow.ui.home.HomeActivity
 import com.flow.mailflow.ui.registration.RegistrationActivity
-import com.flow.mailflow.ui.registration.RegistrationViewModel
 import com.flow.mailflow.utils.SharedPreferenceHelper
 import com.flow.mailflow.utils.Utils.timberCall
 
@@ -76,10 +74,11 @@ class LoginActivity : BaseActivity() {
 
                 Status.SUCCESS -> {
 
-                    val sharedPreferences = getSharedPreferences("user", MODE_PRIVATE)
+                    /*val sharedPreferences = getSharedPreferences("user", MODE_PRIVATE)
                     sharedPreferences.edit().putString("token", its.response?.data?.apiKey).apply()
 
-                    timberCall(this,"tokenGetFromLogin",sharedPreferences.getString(SharedPreferenceHelper.TOKEN,"")?:"Not found")
+                    timberCall(this,"tokenGetFromLogin",sharedPreferences.getString(SharedPreferenceHelper.TOKEN,"")?:"Not found")*/
+                    SharedPreferenceHelper.with(this).putString(SharedPreferenceHelper.TOKEN,its.response?.data?.apiKey)
                     startActivity(Intent(this, HomeActivity::class.java))
                     finishAffinity()
                 }

@@ -1,8 +1,8 @@
 package com.flow.mailflow.api
 
 import android.content.Context
+import androidx.appcompat.app.AppCompatActivity.MODE_PRIVATE
 import com.flow.mailflow.data_models.response_data.base_response.BaseResponse
-import com.flow.mailflow.repo.prefs
 import com.flow.mailflow.utils.App
 import com.flow.mailflow.utils.SharedPreferenceHelper
 import com.flow.mailflow.utils.Utils.timberCall
@@ -120,12 +120,9 @@ object ApiHelper {
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         val authInterceptor = Interceptor { chain ->
             val original: Request = chain.request()
-            val sharedPreferences = App.applicationContext().getSharedPreferences("user", Context.MODE_PRIVATE)
+            val token = SharedPreferenceHelper().getString(SharedPreferenceHelper.TOKEN,"")
             val builder: Request.Builder = original.newBuilder()
-                //.header("Authorization", Credentials.basic("api_admin", "admin123"))
-
-                .header("X-API-Key", sharedPreferences.getString("token", "")?:"")
-
+                .header("X-API-Key", token?:"")
             val request: Request = builder.build()
             chain.proceed(request)
         }

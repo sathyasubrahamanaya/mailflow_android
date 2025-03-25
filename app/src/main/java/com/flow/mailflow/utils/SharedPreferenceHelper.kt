@@ -4,7 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 
-class SharedPreferenceHelper (private val mContext: Context = App.applicationContext())  {
+class SharedPreferenceHelper(private val mContext: Context = App.applicationContext()) {
 
     fun putInt(key: String?, value: Int): SharedPreferenceHelper {
         val preferences: SharedPreferences = android.preference.PreferenceManager
@@ -43,9 +43,20 @@ class SharedPreferenceHelper (private val mContext: Context = App.applicationCon
         return this
     }
 
+    fun putLong(key: String?, `val`: Long): SharedPreferenceHelper {
+        val preferences: SharedPreferences = android.preference.PreferenceManager
+            .getDefaultSharedPreferences(mContext)
+        val edit = preferences.edit()
+        edit.putLong(key, `val`)
+        edit.apply()
+        return this
+    }
 
-
-
+    fun getLong(key: String?, _default: Long): Long {
+        val preferences: SharedPreferences = android.preference.PreferenceManager
+            .getDefaultSharedPreferences(mContext)
+        return preferences.getLong(key, _default)
+    }
 
     fun getFloat(key: String?, _default: Float): Float {
         val preferences: SharedPreferences = android.preference.PreferenceManager
@@ -76,6 +87,12 @@ class SharedPreferenceHelper (private val mContext: Context = App.applicationCon
         return preferences.getBoolean(key, _default)
     }
 
+    fun hasKey(key: String?): Boolean {
+        val preferences: SharedPreferences = android.preference.PreferenceManager
+            .getDefaultSharedPreferences(mContext)
+        return preferences.contains(key)
+    }
+
     fun clearPreferences(): SharedPreferenceHelper {
         val preferences: SharedPreferences = android.preference.PreferenceManager
             .getDefaultSharedPreferences(mContext)
@@ -92,18 +109,12 @@ class SharedPreferenceHelper (private val mContext: Context = App.applicationCon
 
 
     companion object {
+
         const val TOKEN = "token"
-        const val IS_LOGGED="is_logged"
-
-
-
-
-
 
         fun with(context: Context): SharedPreferenceHelper {
             return SharedPreferenceHelper(context)
         }
     }
-
 
 }

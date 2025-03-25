@@ -1,5 +1,6 @@
 package com.flow.mailflow.ui.splash
 
+
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
@@ -19,8 +20,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
-        val sharedPreference = getSharedPreferences("user", MODE_PRIVATE)
-        val token = sharedPreference.getString(SharedPreferenceHelper.TOKEN, "")
+        //val sharedPreference = getSharedPreferences("user", MODE_PRIVATE)
+        val token = SharedPreferenceHelper().getString(SharedPreferenceHelper.TOKEN,"")
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->

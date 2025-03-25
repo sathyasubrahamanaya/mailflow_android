@@ -9,7 +9,6 @@ import com.flow.mailflow.repo.MainRepository
 import kotlinx.coroutines.Dispatchers
 
 class RegistrationViewModel:ViewModel() {
-
     private var mainRepo = MainRepository()
 
     fun register(
@@ -30,7 +29,4 @@ class RegistrationViewModel:ViewModel() {
                 Dispatchers.IO
             ))
         }
-
-
-
 }
