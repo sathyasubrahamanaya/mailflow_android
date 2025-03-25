@@ -11,6 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -19,14 +20,19 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import com.flow.mailflow.api.Status
+import com.flow.mailflow.base_utility.BaseActivity
 import com.flow.mailflow.databinding.ActivityHomeBinding
 import com.flow.mailflow.ui.contacts_list.ContactListActivity
 import com.flow.mailflow.ui.support.SupportActivity
 import com.flow.mailflow.ui.confirm.ConfirmActivity
 import com.flow.mailflow.ui.feedback.FeedbackActivity
+import com.flow.mailflow.ui.home.components.WavClass
 import com.flow.mailflow.utils.Utils.timberCall
+import timber.log.Timber
+import java.io.File
 
-class HomeActivity : AppCompatActivity() {
+class HomeActivity : BaseActivity() {
     private lateinit var binding: ActivityHomeBinding
     private var mediaRecorder: MediaRecorder? = null
     private var isRecording = false
@@ -36,6 +42,9 @@ class HomeActivity : AppCompatActivity() {
     // Properties for toggling playback
     private var mediaPlayer: MediaPlayer? = null
     private var isPlayingFile = false
+    private val vm: HomeViewModel by viewModels()
+
+    lateinit var wavObj: WavClass
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,23 +71,19 @@ class HomeActivity : AppCompatActivity() {
             true
         }
 
-
+        wavObj = WavClass(filesDir.path)
 
         // Set click listeners
         binding.recordButton.setOnClickListener {
             if (!isRecording){
                 if (checkPermissions()) {
                     binding.lottieAnimationView.playAnimation()
-                    startRecording()
+                    startRecordingUI()
                 } else {
                     // Check if we should show rationale or if the permission was permanently denied
                     if (!ActivityCompat.shouldShowRequestPermissionRationale(
                             this,
                             Manifest.permission.RECORD_AUDIO
-                        ) ||
-                        !ActivityCompat.shouldShowRequestPermissionRationale(
-                            this,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
                         )
                     ) {
                         showPermissionSettingsDialog()
@@ -87,14 +92,15 @@ class HomeActivity : AppCompatActivity() {
                     }
                 }
             }else{
-                stopRecording()
+                wavObj.stopRecording()
+                stopRecordingUI()
             }
 
         }
 
 
         binding.filePlayView.setOnClickListener {
-            togglePlayback(outputFilePath)
+            wavObj.getPath(wavObj.tempWavFile)?.let { it1 -> togglePlayback(it1) }
         }
         binding.closeButton.setOnClickListener {
             binding.cardView.isVisible = false
@@ -102,10 +108,46 @@ class HomeActivity : AppCompatActivity() {
             outputFileName = ""
         }
         binding.sendButton.setOnClickListener {
-            startActivity(Intent(this, ConfirmActivity::class.java))
+            if(outputFilePath.isNotEmpty()){
+                generateFileApi(File(outputFilePath))
+            }else{
+                generateFileApi()
+            }
         }
 
 
+    }
+
+    private fun generateFileApi(convertedFile: File? = null) {
+        vm.generateMail(
+            binding.recipientEditText.text.toString(),
+            binding.instructionsEditText.text.toString(),
+            "",
+            convertedFile
+        ).observe(this){
+            when (it.status) {
+                Status.LOADING -> {
+                    showLoading(true)
+                }
+
+                Status.COMPLETED -> {
+                    showLoading(false)
+                }
+
+                Status.ERROR -> {
+                    toastError(this, it.response?.message ?: it.message)
+                }
+
+                Status.SUCCESS -> {
+                    if (it.response?.errorcode == 0) {
+                        Timber.tag("SuccessFromHome").e(it.response.data.toString())
+                        //startActivity(Intent(this, ConfirmActivity::class.java))
+                    }else{
+                        toastError(this, it.response?.message ?: it.message)
+                    }
+                }
+            }
+        }
     }
 
 
@@ -113,50 +155,24 @@ class HomeActivity : AppCompatActivity() {
 
 
     @RequiresApi(Build.VERSION_CODES.S)
-    private fun startRecording() {
+    private fun startRecordingUI() {
         if (isRecording) return
-
-        outputFilePath = "${externalCacheDir?.absolutePath}/recording_${System.currentTimeMillis()}.mp3"
-        outputFileName = "recording_${System.currentTimeMillis()}.mp3"
-
-        mediaRecorder = MediaRecorder(this).apply {
-            setAudioSource(MediaRecorder.AudioSource.MIC)
-            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            setAudioEncodingBitRate(256000)
-            setAudioSamplingRate(44100)
-            setOutputFile(outputFilePath)
-            prepare()
-        }
-        mediaRecorder?.start()
+        wavObj.startRecording()
         isRecording = true
         binding.recordButton.text = "Stop Recording"
-
-        // Update progress bar (simple simulation)
-        Thread {
-            while (isRecording) {
-                Thread.sleep(100)
-                runOnUiThread {
-
-                }
-            }
-        }.start()
     }
 
-    private fun stopRecording() {
+    private fun stopRecordingUI() {
         if (!isRecording) return
-
-        mediaRecorder?.apply {
-            stop()
-            release()
-        }
         binding.lottieAnimationView.cancelAnimation()
         binding.lottieAnimationView.progress = 0f
         mediaRecorder = null
         isRecording = false
+        outputFilePath=  wavObj.stopRecording()?: ""
+        stopRecordingUI()
         binding.recordButton.text = "Start Recording"
         binding.cardView.isVisible = true
-        binding.fileNameTextView.text = outputFileName
+        binding.fileNameTextView.text = outputFilePath
     }
 
     private fun togglePlayback(filePath: String) {
@@ -223,7 +239,7 @@ class HomeActivity : AppCompatActivity() {
         if (requestCode == REQUEST_PERMISSION_CODE) {
             if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 // Permissions granted, start recording if needed
-                startRecording()
+                startRecordingUI()
             } else {
                 timberCall(this,"Permissions required","Permissions are required to record audio.",true)
             }

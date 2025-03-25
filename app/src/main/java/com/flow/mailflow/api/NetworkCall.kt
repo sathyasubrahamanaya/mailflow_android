@@ -5,7 +5,7 @@ data class ApiState<out T>(var status: Status,val response:  T?,val message:Stri
         // In case of Success,set status as
         // Success and data as the response
         fun <T>success(data: T?):ApiState<T>{
-            return ApiState(Status.SUCCESS,data,null,1)
+            return ApiState(Status.SUCCESS,data,null,0)
         }
 
         // In case of failure ,set state to Error ,
