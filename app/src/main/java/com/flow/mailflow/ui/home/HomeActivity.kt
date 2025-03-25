@@ -29,6 +29,7 @@ import com.flow.mailflow.ui.confirm.ConfirmActivity
 import com.flow.mailflow.ui.feedback.FeedbackActivity
 import com.flow.mailflow.ui.home.components.WavClass
 import com.flow.mailflow.utils.Utils.timberCall
+import com.google.gson.Gson
 import timber.log.Timber
 import java.io.File
 
@@ -140,8 +141,13 @@ class HomeActivity : BaseActivity() {
 
                 Status.SUCCESS -> {
                     if (it.response?.errorcode == 0) {
-                        Timber.tag("SuccessFromHome").e(it.response.data.toString())
-                        //startActivity(Intent(this, ConfirmActivity::class.java))
+                        val json = Gson().toJson(it.response.data)
+                        Timber.tag("SuccessFromHome").e(json)
+
+                        val intent = Intent(this, ConfirmActivity::class.java).apply {
+                            putExtra("emailContent", json)
+                        }
+                        startActivity(intent)
                     }else{
                         toastError(this, it.response?.message ?: it.message)
                     }
@@ -157,6 +163,8 @@ class HomeActivity : BaseActivity() {
     @RequiresApi(Build.VERSION_CODES.S)
     private fun startRecordingUI() {
         if (isRecording) return
+        mediaPlayer = null
+        isPlayingFile = false
         wavObj.startRecording()
         isRecording = true
         binding.recordButton.text = "Stop Recording"
@@ -176,6 +184,7 @@ class HomeActivity : BaseActivity() {
     }
 
     private fun togglePlayback(filePath: String) {
+        if (isRecording) return
         if (mediaPlayer == null) {
             // Initialize MediaPlayer and start playback
             mediaPlayer = MediaPlayer().apply {
@@ -211,6 +220,10 @@ class HomeActivity : BaseActivity() {
             it.release()
             mediaPlayer = null
             isPlayingFile = false
+            binding.filePlayView.text = "Play"
+            binding.filePlayView.setTextColor(ContextCompat.getColor(this@HomeActivity, com.flow.mailflow.R.color.green))
+            binding.lottieAnimationPlayer.pauseAnimation()
+            binding.lottieAnimationPlayer.progress = 0f
         }
     }
 

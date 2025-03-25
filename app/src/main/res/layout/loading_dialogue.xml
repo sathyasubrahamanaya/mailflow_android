@@ -30,7 +30,7 @@
                     android:id="@+id/imageBack"
                     android:layout_width="@dimen/_150sdp"
                     android:layout_height="0dp"
-                    android:src="@drawable/mailflow_logo2"
+                    android:src="@drawable/mailflow_logo_icon2"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintDimensionRatio="1"
                     app:layout_constraintEnd_toEndOf="parent"

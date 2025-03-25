@@ -2,9 +2,12 @@ package com.flow.mailflow.repo
 import com.flow.mailflow.api.ApiHelper
 import com.flow.mailflow.api.ApiHelper.apiService
 import com.flow.mailflow.api.ApiState
+import com.flow.mailflow.data_models.request_data.CreateContactRequest
 import com.flow.mailflow.data_models.request_data.LoginRequest
 import com.flow.mailflow.data_models.request_data.RegisterRequest
 import com.flow.mailflow.data_models.response_data.base_response.BaseResponse
+import com.flow.mailflow.data_models.response_data.sub_response.GenerateEmailResponse
+import com.flow.mailflow.data_models.response_data.sub_response.GetContactsResponse
 import com.flow.mailflow.data_models.response_data.sub_response.LoginResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -68,7 +71,7 @@ suspend fun login(
         name: String?,
         audio: File?
 
-    ): Flow<ApiState<BaseResponse<Any>>> {
+    ): Flow<ApiState<BaseResponse<GenerateEmailResponse>>> {
         return flow{
             emit(ApiState.loading())
             val builder = MultipartBody.Builder()
@@ -105,4 +108,39 @@ suspend fun login(
         }.flowOn(Dispatchers.IO)
     }
 
+    suspend fun getContacts():Flow<ApiState<BaseResponse<GetContactsResponse>>>{
+        return flow{
+            emit(ApiState.loading())
+            val response = ApiHelper.safeApiCall {
+                apiService.getContacts()
+            }
+            Timber.tag("RepoStatus").e(response.response.toString())
+            if (response.errorCode == 0) {
+                emit(ApiState.success(response.response))
+            } else
+                emit(ApiState.error(response.errorCode, response.message))
+            emit(ApiState.completed(response.errorCode, response.message))
+        }.flowOn(Dispatchers.IO)
+    }
+
+
+    suspend fun createContact(
+        createContactRequest: CreateContactRequest
+    ): Flow<ApiState<BaseResponse<Any>>> {
+        return flow {
+            emit(ApiState.loading())
+            val response = ApiHelper.safeApiCall {
+                apiService.createContact(
+                    createContactRequest
+                )
+            }
+            Timber.tag("RepoStatus").e(response.response.toString())
+            if (response.errorCode == 0) {
+                emit(ApiState.success(response.response))
+            } else
+                emit(ApiState.error(response.errorCode, response.message))
+
+            emit(ApiState.completed(response.errorCode,response.message))
+        }.flowOn(Dispatchers.IO)
+    }
 }
