@@ -1,11 +1,13 @@
 package com.flow.mailflow.api
 
 import com.flow.mailflow.data_models.request_data.CreateContactRequest
+import com.flow.mailflow.data_models.request_data.FeedBackRequests
 import com.flow.mailflow.data_models.request_data.LoginRequest
 import com.flow.mailflow.data_models.request_data.RegisterRequest
 import com.flow.mailflow.data_models.response_data.base_response.BaseResponse
 import com.flow.mailflow.data_models.response_data.sub_response.GenerateEmailResponse
 import com.flow.mailflow.data_models.response_data.sub_response.GetContactsResponse
+import com.flow.mailflow.data_models.response_data.sub_response.GetQueriesResponse
 import com.flow.mailflow.data_models.response_data.sub_response.LoginResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -49,4 +51,18 @@ interface ApiService {
     suspend fun createContact(
         @Body createContactRequest: CreateContactRequest
     ): Response<BaseResponse<Any>>
+
+    @POST("support/queries/create")
+    suspend fun createQueries(
+        @Body requestBody: Map<String, String>
+    ): Response<BaseResponse<Any>>
+
+    @POST("support/feedback")
+    suspend fun feedback(
+        @Body requestBody: FeedBackRequests
+    ): Response<BaseResponse<Any>>
+
+    @POST("support/queries/get")
+    suspend fun getQueries(
+    ):Response<BaseResponse<GetQueriesResponse>>
 }

@@ -5,63 +5,100 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/activity_horizontal_margin"
     tools:context=".ui.feedback.FeedbackActivity">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/titleTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Feedback"
-        android:textSize="@dimen/text_size_large"
-        android:textColor="@color/primary"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <RatingBar
-        android:id="@+id/ratingBar"
-        style="?android:attr/ratingBarStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:numStars="5"
-        android:rating="0"
-        android:stepSize="1"
-        app:layout_constraintTop_toBottomOf="@id/titleTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/margin_medium"/>
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/ratingTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="How would you rate your experience?"
-        android:textSize="@dimen/text_size_medium"
-        android:textColor="#616161"
-        app:layout_constraintTop_toBottomOf="@id/ratingBar"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/commentTextInputLayout"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Your comments"
-        app:layout_constraintTop_toBottomOf="@id/ratingTextView"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="@dimen/margin_medium">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/commentEditText"
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:minLines="4"/>
-    </com.google.android.material.textfield.TextInputLayout>
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:title="Feedback" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/sendFeedbackButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBarLayout2">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="@dimen/_15sdp">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/titleTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Express your Feedback"
+                android:textColor="@color/primary"
+                android:textSize="@dimen/text_size_large"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margin_medium"
+                android:numStars="5"
+                android:rating="1"
+                android:stepSize="1"
+                android:isIndicator="false"
+            android:progressTint="@color/yellow"
+            android:secondaryProgressTint="@color/yellow"
+            android:backgroundTint="@color/surface"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/titleTextView" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/ratingTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="How would you rate your experience?"
+                android:textSize="@dimen/text_size_medium"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:textColor="#616161"
+                app:layout_constraintTop_toBottomOf="@id/ratingBar"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/commentTextInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Your comments"
+                app:layout_constraintTop_toBottomOf="@id/ratingTextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginTop="@dimen/margin_medium">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/commentEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:gravity="start"
+                    android:minLines="4"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/sendFeedbackButton"
@@ -69,11 +106,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Submit Feedback"
+        android:paddingVertical="@dimen/_12sdp"
         android:textAllCaps="false"
         app:cornerRadius="@dimen/cornerRadius_medium"
-        app:layout_constraintTop_toBottomOf="@id/commentTextInputLayout"
-        android:layout_marginTop="@dimen/margin_medium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        android:layout_margin="@dimen/_15sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

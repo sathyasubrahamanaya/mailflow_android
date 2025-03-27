@@ -3,11 +3,13 @@ import com.flow.mailflow.api.ApiHelper
 import com.flow.mailflow.api.ApiHelper.apiService
 import com.flow.mailflow.api.ApiState
 import com.flow.mailflow.data_models.request_data.CreateContactRequest
+import com.flow.mailflow.data_models.request_data.FeedBackRequests
 import com.flow.mailflow.data_models.request_data.LoginRequest
 import com.flow.mailflow.data_models.request_data.RegisterRequest
 import com.flow.mailflow.data_models.response_data.base_response.BaseResponse
 import com.flow.mailflow.data_models.response_data.sub_response.GenerateEmailResponse
 import com.flow.mailflow.data_models.response_data.sub_response.GetContactsResponse
+import com.flow.mailflow.data_models.response_data.sub_response.GetQueriesResponse
 import com.flow.mailflow.data_models.response_data.sub_response.LoginResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +19,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import retrofit2.http.Query
 import timber.log.Timber
 import java.io.File
 
@@ -143,4 +146,60 @@ suspend fun login(
             emit(ApiState.completed(response.errorCode,response.message))
         }.flowOn(Dispatchers.IO)
     }
+
+    suspend fun createQueries(
+        query: String
+    ): Flow<ApiState<BaseResponse<Any>>> {
+        return flow {
+            emit(ApiState.loading())
+            val response = ApiHelper.safeApiCall {
+                apiService.createQueries(
+                    mapOf("query_text" to query)
+                )
+            }
+            Timber.tag("RepoStatus").e(response.response.toString())
+            if (response.errorCode == 0) {
+                emit(ApiState.success(response.response))
+            } else
+                emit(ApiState.error(response.errorCode, response.message))
+
+            emit(ApiState.completed(response.errorCode,response.message))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun getQueries():Flow<ApiState<BaseResponse<GetQueriesResponse>>>{
+        return flow{
+            emit(ApiState.loading())
+            val response = ApiHelper.safeApiCall {
+                apiService.getQueries()
+            }
+            Timber.tag("RepoStatus").e(response.response.toString())
+            if (response.errorCode == 0) {
+                emit(ApiState.success(response.response))
+            } else
+                emit(ApiState.error(response.errorCode, response.message))
+            emit(ApiState.completed(response.errorCode, response.message))
+        }.flowOn(Dispatchers.IO)
+    }
+
+    suspend fun feedback(
+        requestBody: FeedBackRequests
+    ): Flow<ApiState<BaseResponse<Any>>> {
+        return flow {
+            emit(ApiState.loading())
+            val response = ApiHelper.safeApiCall {
+                apiService.feedback(
+                    requestBody
+                )
+            }
+            Timber.tag("RepoStatus").e(response.response.toString())
+            if (response.errorCode == 0) {
+                emit(ApiState.success(response.response))
+            } else
+                emit(ApiState.error(response.errorCode, response.message))
+
+            emit(ApiState.completed(response.errorCode,response.message))
+        }.flowOn(Dispatchers.IO)
+    }
+
 }

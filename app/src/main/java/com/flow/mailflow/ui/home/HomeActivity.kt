@@ -46,6 +46,7 @@ class HomeActivity : BaseActivity() {
     private val vm: HomeViewModel by viewModels()
 
     lateinit var wavObj: WavClass
+    private var permissionDeniedCount = 0
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,28 +76,18 @@ class HomeActivity : BaseActivity() {
         wavObj = WavClass(filesDir.path)
 
         // Set click listeners
+
         binding.recordButton.setOnClickListener {
-            if (!isRecording){
+            if (!isRecording) {
                 if (checkPermissions()) {
                     binding.lottieAnimationView.playAnimation()
                     startRecordingUI()
                 } else {
-                    // Check if we should show rationale or if the permission was permanently denied
-                    if (!ActivityCompat.shouldShowRequestPermissionRationale(
-                            this,
-                            Manifest.permission.RECORD_AUDIO
-                        )
-                    ) {
-                        showPermissionSettingsDialog()
-                    } else {
-                        requestPermissions()
-                    }
+                    handlePermissionRequest()
                 }
-            }else{
-                wavObj.stopRecording()
+            } else {
                 stopRecordingUI()
             }
-
         }
 
 
@@ -172,12 +163,12 @@ class HomeActivity : BaseActivity() {
 
     private fun stopRecordingUI() {
         if (!isRecording) return
+        wavObj.stopRecording()
         binding.lottieAnimationView.cancelAnimation()
         binding.lottieAnimationView.progress = 0f
         mediaRecorder = null
         isRecording = false
         outputFilePath=  wavObj.stopRecording()?: ""
-        stopRecordingUI()
         binding.recordButton.text = "Start Recording"
         binding.cardView.isVisible = true
         binding.fileNameTextView.text = outputFilePath
@@ -230,18 +221,27 @@ class HomeActivity : BaseActivity() {
 
     private fun checkPermissions(): Boolean {
         val recordPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
-        val storagePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
-        return recordPermission == PackageManager.PERMISSION_GRANTED &&
-                storagePermission == PackageManager.PERMISSION_GRANTED
+        return recordPermission == PackageManager.PERMISSION_GRANTED
     }
+
+    private fun handlePermissionRequest() {
+        if (permissionDeniedCount >= 2) {
+            showPermissionSettingsDialog()
+        } else {
+            requestPermissions()
+        }
+    }
+
+
 
     private fun requestPermissions() {
-        ActivityCompat.requestPermissions(this,
-            arrayOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            REQUEST_PERMISSION_CODE)
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(Manifest.permission.RECORD_AUDIO),
+            REQUEST_PERMISSION_CODE
+        )
     }
 
-    // Called when the user responds to the permission request.
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -249,21 +249,38 @@ class HomeActivity : BaseActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
         if (requestCode == REQUEST_PERMISSION_CODE) {
-            if (grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                // Permissions granted, start recording if needed
+            if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
                 startRecordingUI()
             } else {
-                timberCall(this,"Permissions required","Permissions are required to record audio.",true)
+                permissionDeniedCount++
+                if (permissionDeniedCount >= 2) {
+                    showPermissionSettingsDialog()
+                } else {
+                    showPermissionRationale()
+                }
             }
         }
     }
 
-    // Show a dialog directing the user to the app settings
+    private fun showPermissionRationale() {
+        AlertDialog.Builder(this)
+            .setTitle("Permission Required")
+            .setMessage("This app needs access to your microphone to record audio.")
+            .setPositiveButton("Grant") { dialog, _ ->
+                dialog.dismiss()
+                requestPermissions()
+            }
+            .setNegativeButton("Cancel") { dialog, _ -> dialog.dismiss() }
+            .create()
+            .show()
+    }
+
     private fun showPermissionSettingsDialog() {
         AlertDialog.Builder(this)
             .setTitle("Permission Required")
-            .setMessage("Audio recording permissions are permanently denied. Please enable them in the app settings.")
+            .setMessage("Audio recording permission is permanently denied. Please enable it in the app settings.")
             .setPositiveButton("Open Settings") { dialog, _ ->
                 dialog.dismiss()
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
@@ -280,6 +297,7 @@ class HomeActivity : BaseActivity() {
     companion object {
         private const val REQUEST_PERMISSION_CODE = 1001
     }
+
 
 
 }

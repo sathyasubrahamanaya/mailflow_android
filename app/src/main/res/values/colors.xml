@@ -5,9 +5,17 @@
     <color name="secondary">#03DAC6</color>
     <color name="background">#FFFFFF</color>
     <color name="surface">#FFFFFF</color>
+    <color name="surface2">#FFFFFF</color>
     <color name="error">#B00020</color>
+    <color name="red50">#FFE7E7</color>
+    <color name="orange">#F67148</color>
+    <color name="yellow">#F1EAA1</color>
     <color name="green">#1DBB23</color>
+    <color name="green2">#7FE983</color>
+    <color name="blue50">#45A8F8</color>
 
     <color name="blackTransparent70">#D9000000</color>
+    <color name="black50">#99000000</color>
+    <color name="black">#000000</color>
 
 </resources>
