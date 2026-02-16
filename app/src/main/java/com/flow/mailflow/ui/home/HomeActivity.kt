@@ -19,6 +19,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.get
 import androidx.core.view.isVisible
 import com.flow.mailflow.api.Status
 import com.flow.mailflow.base_utility.BaseActivity
@@ -26,8 +27,10 @@ import com.flow.mailflow.databinding.ActivityHomeBinding
 import com.flow.mailflow.ui.contacts_list.ContactListActivity
 import com.flow.mailflow.ui.support.SupportActivity
 import com.flow.mailflow.ui.confirm.ConfirmActivity
+import com.flow.mailflow.ui.drafts.DraftsActivity
 import com.flow.mailflow.ui.feedback.FeedbackActivity
 import com.flow.mailflow.ui.home.components.WavClass
+import com.flow.mailflow.ui.notes.NotesActivity
 import com.flow.mailflow.utils.Utils.timberCall
 import com.google.gson.Gson
 import timber.log.Timber
@@ -72,6 +75,17 @@ class HomeActivity : BaseActivity() {
             startActivity(Intent(this, FeedbackActivity::class.java))
             true
         }
+        binding.toolbar.menu.getItem(3).setOnMenuItemClickListener { menuItem ->
+            startActivity(Intent(this, DraftsActivity::class.java))
+            true
+        }
+
+        binding.toolbar.menu.getItem(4).setOnMenuItemClickListener { menuItem ->
+            startActivity(Intent(this, NotesActivity::class.java))
+            true
+        }
+
+
 
         wavObj = WavClass(filesDir.path)
 

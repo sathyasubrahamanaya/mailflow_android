@@ -21,4 +21,9 @@ class HomeViewModel:ViewModel() {
                 Dispatchers.IO
             ))
         }
+
+    fun sendToDrafts(toEmail: String, subject:String, body:String) = liveData {
+        emitSource(mainRepo.sendToDrafts(toEmail, subject, body).asLiveData(Dispatchers.IO))
+
+    }
 }

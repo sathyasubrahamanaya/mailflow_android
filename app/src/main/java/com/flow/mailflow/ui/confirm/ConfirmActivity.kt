@@ -13,6 +13,7 @@ import com.flow.mailflow.base_utility.BaseActivity
 import com.flow.mailflow.data_models.response_data.sub_response.EmailContent
 import com.flow.mailflow.data_models.response_data.sub_response.GenerateEmailResponse
 import com.flow.mailflow.databinding.ActivityConfirmBinding
+import com.flow.mailflow.ui.drafts.DraftsActivity
 import com.flow.mailflow.ui.home.HomeViewModel
 import com.flow.mailflow.utils.Utils.timberCall
 import com.google.gson.Gson
@@ -24,6 +25,7 @@ class ConfirmActivity : BaseActivity() {
     val ccRecipients = arrayOf("cc1@example.com", "cc2@example.com")
     val subject = "Your Subject Here"
     val body = "Your email body here."
+    var draftId: String? = null
 
     private val vm: HomeViewModel by viewModels()
 
@@ -40,14 +42,36 @@ class ConfirmActivity : BaseActivity() {
         }
         setContentView(binding.root)
 
-        val json = intent.getStringExtra("emailContent")
-        mailResponse = Gson().fromJson(json, GenerateEmailResponse::class.java)
+        if(intent.hasExtra("emailContent")) {
 
-        assignData(mailResponse.emailContent)
+            val json = intent.getStringExtra("emailContent")
+            mailResponse = Gson().fromJson(json, GenerateEmailResponse::class.java)
+
+            assignData(mailResponse.emailContent)
+        }
+        else if (intent.hasExtra(DraftsActivity.EMAIL_CONTENT)){
+            binding.recipientEditText.setText(intent.getStringExtra(DraftsActivity.EMAIL_TO))
+            binding.subjectEditText.setText(intent.getStringExtra(DraftsActivity.EMAIL_SUBJECT))
+            binding.bodyEditText.setText(intent.getStringExtra(DraftsActivity.EMAIL_CONTENT))
+            draftId = intent.getStringExtra(DraftsActivity.DRAFT_ID)
+
+
+
+        }
 
         binding.sendToGmailButton.setOnClickListener {
             if(validate()){
                 sendEmail()
+            }
+        }
+
+
+        binding.saveToDrafts.setOnClickListener {
+            if(validate()){
+                sendToDraftsApi()
+            }
+            else{
+                toastError(this, "Please fill all fields")
             }
         }
 
@@ -59,6 +83,35 @@ class ConfirmActivity : BaseActivity() {
             }
         }
 
+    }
+
+    private  fun sendToDraftsApi() {
+        vm.sendToDrafts(
+            binding.recipientEditText.text.toString(),
+            binding.subjectEditText.text.toString(),
+            binding.bodyEditText.text.toString()
+        ).observe(this) {
+            when (it.status) {
+                Status.LOADING -> {
+                    showLoading(true)
+                }
+
+                Status.COMPLETED -> {
+                    showLoading(false)
+                }
+
+                Status.ERROR -> {
+                    toastError(this, it.response?.message ?: it.message)
+                }
+
+                Status.SUCCESS -> {
+                    toastError(this, it.response?.message ?: it.message)
+
+                }
+
+
+            }
+        }
     }
 
 
@@ -108,6 +161,7 @@ class ConfirmActivity : BaseActivity() {
         val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse(uriText))
         startActivity(emailIntent)
     }
+
 
     private fun validate(): Boolean {
         var status = true

@@ -95,6 +95,20 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bodyTextInputLayout" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/saveToDrafts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/_7sdp"
+            android:paddingVertical="@dimen/_10sdp"
+            android:text="Save To Drafts"
+            android:textAllCaps="false"
+            android:textSize="@dimen/_14ssp"
+            app:cornerRadius="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sendToGmailButton" />
+
 
         <LinearLayout
             android:id="@+id/modifyBodyLayout"

@@ -5,14 +5,14 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
-
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <application
-        android:allowBackup="true"
         android:name=".utils.App"
+        android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -21,6 +21,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MailFlow"
         tools:targetApi="31">
+        <activity
+            android:name=".ui.notes.NoteDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.drafts.DraftsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.notes.NotesActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.support.SupportActivity"
             android:exported="false" />
